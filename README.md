@@ -1,2 +1,2 @@
 # screech
-Screech ETL Framework
+Screech Data and Visualisation tool
