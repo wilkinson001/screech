@@ -1,0 +1,38 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres:10.3-alpine
+    container_name: screech_db
+    env_file:
+      - ./.env.secret
+    ports:
+      - 127.0.0.1:5432:5432
+    networks:
+      - main
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+      args:
+        requirements: requirements_dev.txt
+    container_name: screech_app
+    user: appuser
+    env_file:
+      - ./.env
+      - ./.env.secret
+    command: flask run
+    volumes:
+      - ./app:/app
+    depends_on:
+      - db
+    networks:
+      - main
+
+networks:
+  main:
+
+volumes:
+  dbdata:
