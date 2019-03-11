@@ -1,0 +1,138 @@
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="/app/static/js/d3.v4.js"></script>
+	<script src="/app/static/js/jquery.min.js"></script>
+	<script src="/app/static/js/bootstrap.min.js"></script>
+	<link href="/app/static/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body style="padding-top: 5rem; background-color: #eee" onresize="redraw()">
+	<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand" href="/">Screech</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+	<div class="collapse navbar-collapse" id="navbarsExampleDefault">
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item">
+				<a class="nav-link" href="/">Home</a>
+			</li>
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Options</a>
+				<div class="dropdown-menu" aria-labelledby="dropdown01">
+				  <a class="dropdown-item" href="#">Action</a>
+				  <a class="dropdown-item" href="#">Another action</a>
+				  <a class="dropdown-item" href="#">Something else here</a>
+				</div>
+			</li>
+          <li class="nav-item active">
+    			<a class="nav-link" href="/D3">D3 Test <span class="sr-only">(current)</span></a>
+    		</li>
+		</ul>
+		<ul class="navbar-nav justify-content-end">
+		<li class="nav-item">
+			<a class="nav-link" href="#">Logout</a>
+		</li>
+		</ul>
+	</div>
+	</nav>
+    <div class="container-fluid">
+    <div class="row">
+	<div class="col-sm-3 col-md-3 d-none d-sm-block sidebar" id="side" style="border-right: thin solid darkgrey">
+	</div>
+	<main role="main" class="col-sm-9 ml-sm-auto col-md-9 pt-3">
+	<div id="main_div">
+	</div><br><br>
+	<div>
+        <button style="float: left" type="submit" class="btn btn-primary">Edit this graph</button>
+    	 <button style="float: right" type="submit" class="btn btn-primary">Use this graph</button>
+    </div>
+	</main>
+    <script>
+    function switch_tab(tab_name){
+        var tabs = document.getElementsByClassName("tabs");
+        var i=0;
+        for(i=0;i<tabs.length;i++){
+            if(tabs[i].style.display=="block"){
+                tabs[i].style.display="none"
+                document.getElementById(tabs[i].id+"_nav").classList.remove("active")
+            }
+        }
+        document.getElementById(tab_name).style.display="block"
+        document.getElementById(tab_name+"_nav").classList.add("active")
+    }
+    </script>
+    <script>
+    //d3 code example
+    function redraw(){
+        d3.selectAll("svg").remove();
+        var div_width = d3.select("#main_div").style("width");
+        div_width=div_width.replace("px", "");
+        
+        var margin = {top: 20, right: 20, bottom: 50, left: 50},
+            width = div_width-margin.left-margin.right,
+            height = (document.documentElement.clientHeight*0.7)-margin.top-margin.bottom;
+            
+        var x = d3.scaleLinear().range([0, width])
+        var y = d3.scaleLinear().range([height, 0])
+        
+        var svg = d3.select("#main_div").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .style("display","block")
+            .style("margin","auto")
+        .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top +")");
+            
+        //data processing - this will be done using flask in the future
+        d3.csv("/static/data/data2.csv", function(error, data){
+                if (error) throw error;
+                
+                data.forEach(function(d){
+                    d.height = +d.height;        
+                    d.weight = +d.weight;
+                })
+                
+                var min_x = d3.min(data, function(d){ return d.weight}),
+                    max_x =  d3.max(data, function(d){ return d.weight}),
+                    min_y = d3.min(data, function(d){ return d.height}), 
+                    max_y = d3.max(data, function(d){ return d.height});
+                    
+                x.domain([min_x-0.1*min_x, max_x+0.1*max_x]);
+                y.domain([min_y-0.1*min_y, max_y+0.1*max_y]);
+                
+                svg.selectAll("dot")
+                    .data(data)
+                .enter().append("circle")
+                    .style("fill", "steelblue")
+                    .attr("r", 5)
+                    .attr("cx", function(d){ return x(d.weight)})
+                    .attr("cy", function(d){ return y(d.height)});
+                
+                svg.append("g")
+                    .attr("transform", "translate(0,"+height+")")
+                    .call(d3.axisBottom(x));
+                
+                svg.append("text")
+                    .attr("transform", "translate(" + (width/2) + "," + (height+margin.top+20) +")")
+                    .style("text-anchor", "middle")
+                    .text("Weight");
+                
+                svg.append("g")
+                    .call(d3.axisLeft(y));
+                    
+                svg.append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", 0-margin.left)
+                    .attr("x", 0-(height/2))
+                    .attr("dy", "1em")
+                    .style("text-anchor", "middle")
+                    .text("Height");
+        });
+    }
+                
+    redraw();
+    </script>
+</body>

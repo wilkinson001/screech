@@ -1,0 +1,144 @@
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="/app/static/js/d3.v4.js"></script>
+	<script src="/app/static/js/jquery.min.js"></script>
+	<script src="/app/static/js/bootstrap.min.js"></script>
+	<link href="/app/static/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body style="padding-top: 5rem; background-color: #eee">
+	<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand" href="/">Screech</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+	<div class="collapse navbar-collapse" id="navbarsExampleDefault">
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item active">
+				<a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+			</li>
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Options</a>
+				<div class="dropdown-menu" aria-labelledby="dropdown01">
+				  <a class="dropdown-item" href="#">Action</a>
+				  <a class="dropdown-item" href="#">Another action</a>
+				  <a class="dropdown-item" href="#">Something else here</a>
+				</div>
+			</li>
+		</ul>
+		<ul class="navbar-nav justify-content-end">
+		<li class="nav-item">
+			<a class="nav-link" href="/logout">Logout</a>
+		</li>
+		</ul>
+	</div>
+	</nav>
+	<div class="container-fluid">
+	<div class="row">
+	<nav class="col-sm-3 col-md-2 d-none d-sm-block sidebar">
+		<ul class="nav nav-pills flex-column">
+		<!--All links will need content on them, possibly just in a hidden div rather than new page -->
+			<li class="nav-item">
+				<a class="nav-link active" id="select_data_nav" onclick=switch_tab("select_data") href="#select_data">Select Data</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" id="local_data_nav" onclick=switch_tab("local_data") href="#local_data">Local File to Server</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" id="db_connection_nav" onclick=switch_tab("db_connection") href="#db_connection">DB Connection</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" id="remote_data_nav" onclick=switch_tab("remote_data") href="#remote_data">Remote File to Server</a>
+			</li>
+		</ul>
+		</nav>
+    <main role="main" class="col-sm-9 ml-sm-auto col-md-10 pt-3">
+    <g>
+      <div style="text-align: center; padding: 3rem 1.5rem; display: block" id="select_data" class="tabs">
+        <h1>Select Data</h1>
+        <p class="lead">Select the files you wish to join and visualise below, or use <br>the load data options on the left to load new files.</p>
+		<form action="/recommend" method="POST"><!--add method and action -->
+        <table class="table" id="file-list" class="table table-striped">
+    		<thead>
+    			<tr>
+    				<th data-field="select"></th>
+    				<th data-field="fname">File Name</th>
+    				<th data-field="fowner">File owner</th>
+    				<th data-field="fdate">Date Added</th>
+                    <th data-field="dbtable">Database Table</th>
+    		</thead>
+    		<tbody>
+            
+            {% if res_len>-1 %}
+            {% for x in range(0, res_len) %}
+                <tr>
+                    <td><input type="checkbox" name="selected" id={{ res[x][3] }} value={{ res[x][3] }}></td>
+                    <td>{{ res[x][0] }}</td>
+                    <td>{{ res[x][1] }}</td>
+                    <td>{{ res[x][2] }}</td>
+                    <td>{{ res[x][3] }}</td>
+                </tr>
+            {% endfor %}
+            {% endif %}
+       
+    		</tbody>
+    	</table>
+    
+        <br>
+    		<div style="float: right">
+        	  <button type="submit" class="btn btn-primary">Use Selected Files</button>
+        	</div>
+        </form>    
+      </div>
+      </g>
+      <g>
+      <div style="text-align: center; padding: 3rem 1.5rem; display: none" id="local_data" class="tabs">
+          <h1>Local Data</h1>
+          <form action="/local_file" method="POST">
+          <div class="form-group">
+              <label for="local_file_input">Enter File Path</label><br>
+              <input type="text" size="50" class="form control" id="local_file_input" name="local_file" placeholder="Enter full path to file on server" required/><br><br>
+              <input type="text" size="20" class="form control" id="table_name" name="table_name" placeholder="Enter table name" required/><br><br>
+              <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+          </form>
+      </div>
+      </g>
+      <g>
+      <div style="text-align: center; padding: 3rem 1.5rem; display: none" id="db_connection" class="tabs">
+          <h1>DB Connection</h1>
+      </div>
+      </g>
+      <g>
+      <div style="text-align: center; padding: 3rem 1.5rem; display: none" id="remote_data" class="tabs">
+          <h1>Remote Data</h1>
+          <form action="/upload" method="POST" enctype="multipart/form-data">
+          <div class="form-group">
+              <input type="file" class="form control" id="remote_file_input" name="remote_file" placeholder="Select file" required/><br><br>
+              <input type="text" size="20" class="form control" id="table_name" name="table_name" placeholder="Enter table name" required/><br><br>
+              <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+          </form>
+      </div>
+	  </g>
+	  </div>
+	</div>
+    </main>
+    <script>
+    function switch_tab(tab_name){
+        var tabs = document.getElementsByClassName("tabs");
+        var i=0;
+        for(i=0;i<tabs.length;i++){
+            if(tabs[i].style.display=="block"){
+                tabs[i].style.display="none"
+                document.getElementById(tabs[i].id+"_nav").classList.remove("active")
+            }
+        }
+        document.getElementById(tab_name).style.display="block"
+        document.getElementById(tab_name+"_nav").classList.add("active")
+    }
+    
+    </script>
+</body>
