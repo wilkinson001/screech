@@ -9,6 +9,10 @@ COPY ./requirements_dev.txt /app/.
 COPY ./requirements.txt /app/.
 
 # Install any needed packages specified in requirements.txt
+RUN echo "http://dl-8.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
+RUN apk --no-cache --update-cache add gcc gfortran python python-dev py-pip build-base wget freetype-dev libpng-dev openblas-dev
+RUN ln -s /usr/include/locale.h /usr/include/xlocale.h
+RUN pip install --trusted-host pypi.python.org numpy
 RUN pip install --trusted-host pypi.python.org -r requirements_dev.txt
 
 # Make port 80 available to the world outside this container
