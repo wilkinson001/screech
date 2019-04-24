@@ -4,11 +4,11 @@ from app import functions
 import pandas as pd
 import operator
 import hashlib
-print(os.getcwd())
 
 app = Flask(__name__)
 #change depending on setup
-app.config['UPLOAD_FOLDER']="E:\\onedrive\\y3\\dissertation\\flask\\uploads"
+#app.config['UPLOAD_FOLDER']="E:\\onedrive\\y3\\dissertation\\flask\\uploads"
+app.config['UPLOAD_FOLDER']='/uploads'
 #app.config['UPLOAD_FOLDER']="C:\\Users\\owilkinson\\onedrive\\y3\\dissertation\\flask\\uploads"
 app.jinja_env.add_extension('jinja2.ext.loopcontrols')
 #set session key

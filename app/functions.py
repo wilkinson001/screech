@@ -111,7 +111,7 @@ def DateString(columns, mc_list, col_number):
 
 def db_connect():
     try:
-        conn=mysql.connector.connect(user='screech', password='screech', host='localhost', database='screech', allow_local_infile=True)
+        conn=mysql.connector.connect(user='screech', password='screech', host='db', database='screech', allow_local_infile=True)
         print("successful database connection")
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:

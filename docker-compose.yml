@@ -2,7 +2,9 @@ version: '3.7'
 
 services:
   db:
-    image: postgres:10.3-alpine
+    build:
+      context: ./db
+      dockerfile: Dockerfile
     container_name: screech_db
     env_file:
       - ./.env.secret
@@ -16,6 +18,7 @@ services:
   app:
     build:
       context: .
+      dockerfile: Dockerfile
       args:
         requirements: requirements_dev.txt
     container_name: screech_app
@@ -23,11 +26,13 @@ services:
     env_file:
       - ./.env
       - ./.env.secret
-    command: flask run
+    command: flask run --host 0.0.0.0
     volumes:
       - ./app:/app
     depends_on:
       - db
+    ports:
+      - 127.0.0.1:5000:5000
     networks:
       - main
 
