@@ -26,13 +26,25 @@ services:
     env_file:
       - ./.env
       - ./.env.secret
-    command: flask run --host 0.0.0.0
+    command: gunicorn -b 0.0.0.0:5001 app.hello_fl:app --chdir /
     volumes:
       - ./app:/app
     depends_on:
       - db
+    expose:
+      - 5001
+    networks:
+      - main
+
+  nginx:
+    container_name: nginx
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
     ports:
-      - 127.0.0.1:5000:5000
+      - 80:80
+    depends_on:
+      - app
     networks:
       - main
 

@@ -16,15 +16,15 @@ RUN pip install --trusted-host pypi.python.org -r requirements_dev.txt
 
 COPY ./app /app
 
-RUN addgroup -g 1001 appuser
-RUN adduser -u 1001 -D appuser -G appuser
+RUN addgroup -g 1000 appuser
+RUN adduser -u 1000 -D appuser -G appuser
 RUN mkdir /uploads/
 RUN chmod 777 /uploads/
 
 # Make port 80 available to the world outside this container
-EXPOSE 5000
+EXPOSE 5001
 
 ENV FLASK_APP=hello_fl.py
 ENV FLASK_ENV=development
 # Run app.py when the container launches
-CMD ["flask", "run"]
+CMD ["gunicorn", "-b", "0.0.0.0:5001", "app.hello_fl:app", "--chdir", "/"]

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from flask import Flask, render_template, request, redirect, session
 import os
 from app import functions
@@ -5,7 +6,10 @@ import pandas as pd
 import operator
 import hashlib
 
-app = Flask(__name__)
+app = Flask(__name__, 
+        static_url_path='/static/', 
+        static_folder='static',
+        template_folder='templates')
 #change depending on setup
 #app.config['UPLOAD_FOLDER']="E:\\onedrive\\y3\\dissertation\\flask\\uploads"
 app.config['UPLOAD_FOLDER']='/uploads'
