@@ -1,0 +1,7 @@
+{
+    "python.autoComplete.addBrackets": true,
+    "python.dataScience.sendSelectionToInteractiveWindow": true,
+    "python.formatting.provider": "black",
+    "python.linting.enabled": true,
+    "editor.formatOnSave": true
+}
